@@ -64,7 +64,7 @@ The sources included in the corpus are:
 * US News
 * Washington Post
 * Wall Street Journal
-* Xin Hua
+* Xinhua
 
 
 <br />
