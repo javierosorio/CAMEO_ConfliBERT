@@ -1,6 +1,10 @@
 # Corpus
 
+<br />
+
 This folder contains the corpus used in the training stage of this application.
+
+<br />
 
 ## Content
 
@@ -46,16 +50,27 @@ The sources included in the corpus are:
 * Wall Street Journal
 * Xin Hua
 
+<br />
+
 ## Corpus file
 
-The corpus file `cameo_select.csv' is in commma separated values.
+The corpus file "cameo_select.csv" is in commma separated values.
 
 The file contains the following fields:
 
-* url: link to the original news article
-* date: publication date
-* source: name of the news soruce
-* sentences: single sentence of news content
-* stems: sentence in stem format
-* relevant_stems: stems relevant to CAMEO categories
+* **url**: link to the original news article
+* **date**: publication date
+* **source**: name of the news soruce
+* **sentences**: single sentence of news content
+* **stems**: sentence in stem format
+* **relevant_stems**: stems relevant to CAMEO categories
+
+<br />
+
+## Sentence selection
+
+To select these sentences, we used the CAMEO verbs and their synonyms included in "CAMEO.verbpatterns.150430.txt", which is available [here](
+https://github.com/openeventdata/UniversalPetrarch/blob/master/UniversalPetrarch/data/dictionaries/CAMEO.verbpatterns.150430.txt)
+
+File **XXX** shows the process used to select sentences. 
 
