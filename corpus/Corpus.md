@@ -6,6 +6,22 @@ This folder contains the corpus used in the training stage of this application.
 
 <br />
 
+## Corpus file
+
+The corpus file `cameo_select.csv` is in commma separated values.
+
+The file contains the following fields:
+
+* **url**: link to the original news article
+* **date**: publication date
+* **source**: name of the news soruce
+* **sentences**: single sentence of news content
+* **stems**: sentence in stem format
+* **relevant_stems**: stems relevant to CAMEO categories
+
+
+<br />
+
 ## Content
 
 The corpus contains 21,000 sentences randomly selected from 35 news agencies. The sample includes 600 sentences per source.
@@ -50,20 +66,6 @@ The sources included in the corpus are:
 * Wall Street Journal
 * Xin Hua
 
-<br />
-
-## Corpus file
-
-The corpus file "cameo_select.csv" is in commma separated values.
-
-The file contains the following fields:
-
-* **url**: link to the original news article
-* **date**: publication date
-* **source**: name of the news soruce
-* **sentences**: single sentence of news content
-* **stems**: sentence in stem format
-* **relevant_stems**: stems relevant to CAMEO categories
 
 <br />
 
@@ -75,8 +77,5 @@ https://github.com/openeventdata/UniversalPetrarch/blob/master/UniversalPetrarch
 File **XXX** shows the process used to select sentences. 
 
 
-Example of `TEXT`
-Example of 'TEXT'
-Example of `TEXT'
-Example of 'TEXT`
+
 
