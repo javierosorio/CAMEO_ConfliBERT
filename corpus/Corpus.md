@@ -78,4 +78,20 @@ File **XXX** shows the process used to select sentences.
 
 
 
+<br />
+
+## Sample to Train Annotators
+
+File `cameo_100.csv` contains a random selection of 100 sentences derived from the corpus. This file includes the following fields:
+
+* **No.**: unique identifier per sentence
+* **sentences**: single sentence of news content
+* **url**: URL of the original news story
+* **date**: publication date
+* **source**: name of the news soruce
+
+To train coders in the different annotation tasks, we used the annotation platform [TagTog](https://www.tagtog.net/) to annotate this sample of 100 stories.
+
+
+
 
