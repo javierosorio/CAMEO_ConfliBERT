@@ -94,4 +94,20 @@ To train coders in the different annotation tasks, we used the annotation platfo
 
 
 
+<br />
 
+## Crawlers and Processes
+
+The folder `Crawlers and Processes` contains the scripts used to generate the corpus used in this study.  The folder includes:
+
+* **Crawlers and Processes**: example crawlers for two types of sources. We combined Newspaper3k and manually designed patterns with Beautiful Soup.
+* **Preprocess**: Preprocessing pipelines for five different types of sources. Cleaning and filtering stories in conflicts domain.
+* **Patterns**: statistically summarized the most frequent keywords’ regular expressions to filter conflicts domain.
+
+The scripts in this folder run on `Python v.XXX`.
+
+
+
+<br />
+<br />
+<br />
