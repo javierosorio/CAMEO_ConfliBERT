@@ -74,8 +74,6 @@ The sources included in the corpus are:
 To select these sentences, we used the CAMEO verbs and their synonyms included in "CAMEO.verbpatterns.150430.txt", which is available [here](
 https://github.com/openeventdata/UniversalPetrarch/blob/master/UniversalPetrarch/data/dictionaries/CAMEO.verbpatterns.150430.txt)
 
-File **XXX** shows the process used to select sentences. 
-
 
 
 <br />
