@@ -102,7 +102,7 @@ The folder `Crawlers and Processes` contains the scripts used to generate the co
 * **Preprocess**: Preprocessing pipelines for five different types of sources. Cleaning and filtering stories in conflicts domain.
 * **Patterns**: statistically summarized the most frequent keywords’ regular expressions to filter conflicts domain.
 
-The scripts in this folder run on `Python v.XXX`.
+The scripts in this folder run on `Python 3.6-3.8`.
 
 
 
