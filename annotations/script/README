@@ -1,0 +1,5 @@
+This folder contains the R scripts to evaluate the intercoder reliability.
+
+The main file is "intercoder_reliability_latest.R" wich contains the latest version of the reliability assessment.
+
+The folder also contains different versions as we gradually advance in the annotation rounds.
