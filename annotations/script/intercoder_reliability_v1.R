@@ -1,0 +1,586 @@
+########################################################################################
+########################################################################################
+# CAMEO ConfliBERT
+#
+# Inter-coder reliability
+# 
+# Javier Osorio
+# 9/28/2021
+########################################################################################
+########################################################################################
+
+
+################################################################
+# CONTET
+# 
+################################################################
+
+
+################################################################
+################################################################
+# SETUP
+
+# Clean the environment
+rm(list = ls())
+
+# Load packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, here, readxl, glue, dplyr, tidyr, stringr, irr, ggplot2, stringdist)
+
+
+
+################################################################
+################################################################
+# GET DATA ROUND 1
+
+
+################################################
+# Get Round 1
+data.r1 <- read_csv(here("training_round_1",
+                           "summary.csv"))
+
+# Explore data
+names(data.r1)
+
+# Extract sentence number and make it first column
+data.r1 <- data.r1 %>%
+  mutate(num=as.numeric(str_extract_all(data.r1$plain_text,"(?<=No.).+(?=sentences)"))) %>%
+  relocate(num)
+  
+  
+################################################
+# Generate data by annotation task
+
+##################
+# Task 1: Relevant
+relevant.r1 <- data.r1 %>%
+  select('1_Relevant_1','1_Relevant_2','1_Relevant_3','1_Relevant_4','1_Relevant_5')
+colnames(relevant.r1) <- c('rater1','rater2','rater3','rater4','rater5')
+
+
+##################
+# Task 2: PentaClass
+
+# Action 1
+penta.a1.r1 <- data.r1 %>% 
+  select('Action1-PentaClass_1','Action1-PentaClass_3','Action1-PentaClass_4','Action1-PentaClass_5') %>%
+  replace(is.na(.), "")
+colnames(penta.a1.r1) <- c('rater1','rater3','rater4','rater5')
+
+# Action 2
+penta.a2.r1 <- data.r1 %>% 
+  select("Action2-PentaClass_3", "Action2-PentaClass_4","Action2-PentaClass_5") %>%
+  replace(is.na(.), "")
+colnames(penta.a2.r1) <- c('rater3','rater4','rater5')
+
+
+# Action 3
+penta.a3.r1 <- data.r1 %>% 
+  select("Action2-PentaClass_3", "Action2-PentaClass_4","Action2-PentaClass_5") %>%
+  replace(is.na(.), "")
+colnames(penta.a3.r1) <- c('rater3','rater4','rater5')
+
+
+
+##################
+# Task 3: CAMEO
+
+# Action 1
+cameo.a1.r1 <- data.r1 %>%
+  select('Action1_CAMEO_1','Action1_CAMEO_3','Action1_CAMEO_4', 'Action1_CAMEO_5') %>%
+  replace(is.na(.), "")
+colnames(cameo.a1.r1) <- c('rater1','rater3','rater4','rater5')
+
+# Action 2
+cameo.a2.r1 <- data.r1 %>%
+  select('Action2_CAMEO_3','Action2_CAMEO_4', 'Action2_CAMEO_5') %>%
+  replace(is.na(.), "")
+colnames(cameo.a2.r1) <- c('rater3','rater4','rater5')
+
+# Action 3
+cameo.a3.r1 <- data.r1 %>%
+  select('Action3_CAMEO_3','Action3_CAMEO_4', 'Action3_CAMEO_5') %>%
+  replace(is.na(.), "")
+colnames(cameo.a3.r1) <- c('rater3','rater4','rater5')
+
+
+##################
+# Task 4: Source, Action, Target
+
+# Extract entities
+  {
+  ###########
+  # Entity 1
+  
+  # Select entities_1
+  e1 <- data.r1 %>% select(num, entities_1) 
+  
+  # Delete brackets
+  e1 <- e1 %>% mutate(gsub("\\[|\\]", "", entities_1))
+  
+  # Extract the content from parentheses
+  e1 <- str_extract_all(e1$entities_1,  "(?<=\\().+?(?=\\))")
+  
+  # Convert list to data frame with uneven length
+  e1 <-plyr::ldply(e1, rbind)
+  
+  
+  ###########
+  # Entity 2
+  
+  # Select entities_2
+  e2 <- data.r1 %>% select(entities_2) 
+  
+  # Delete brackets
+  e2 <- e2 %>% mutate(gsub("\\[|\\]", "", entities_2))
+  
+  # Extract the content from parentheses
+  e2 <- str_extract_all(e2$entities_2,  "(?<=\\().+?(?=\\))")
+  
+  # Convert list to data frame with uneven length
+  e2 <-plyr::ldply(e2, rbind)
+  
+  
+  ###########
+  # Entity 3
+  
+  # Select entities_3
+  e3 <- data.r1 %>% select(entities_3) 
+  
+  # Delete brackets
+  e3 <- e3 %>% mutate(gsub("\\[|\\]", "", entities_3))
+  
+  # Extract the content from parentheses
+  e3 <- str_extract_all(e3$entities_3,  "(?<=\\().+?(?=\\))")
+  
+  # Convert list to data frame with uneven length
+  e3 <-plyr::ldply(e3, rbind)
+  
+  
+  ###########
+  # Entity 4
+  
+  # Select entities_4
+  e4 <- data.r1 %>% select(entities_4) 
+  
+  # Delete brackets
+  e4 <- e4 %>% mutate(gsub("\\[|\\]", "", entities_4))
+  
+  # Extract the content from parentheses
+  e4 <- str_extract_all(e4$entities_4,  "(?<=\\().+?(?=\\))")
+  
+  # Convert list to data frame with uneven length
+  e4 <-plyr::ldply(e4, rbind)
+  
+  
+  ###########
+  # Entity 5
+  
+  # Select entities_5
+  e5 <- data.r1 %>% select(entities_5) 
+  
+  # Delete brackets
+  e5 <- e5 %>% mutate(gsub("\\[|\\]", "", entities_5))
+  
+  # Extract the content from parentheses
+  e5 <- str_extract_all(e5$entities_5,  "(?<=\\().+?(?=\\))")
+  
+  # Convert list to data frame with uneven length
+  e5 <-plyr::ldply(e5, rbind)
+  
+  }
+  # End extract entities
+
+
+
+################################################################
+################################################################
+# INTERCODER RELIABILITY FLEISS KAPPA
+
+##################
+# Task 1: Relevant
+k.rel.r1 <- as.numeric(kappam.fleiss(relevant.r1)[5])
+k.rel.r1
+
+
+
+##################
+# Task 2: PentaClass
+
+#kappa2(penta.a1.r1[,c(1,4)], "unweighted")
+
+# PentaClass by actor
+k.penta.a1.r1 <- as.numeric(kappam.fleiss(penta.a1.r1, exact=TRUE)[5])
+k.penta.a2.r1 <- as.numeric(kappam.fleiss(penta.a2.r1, exact=TRUE)[5])
+k.penta.a3.r1 <- as.numeric(kappam.fleiss(penta.a3.r1, exact=TRUE)[5])
+
+# Average 
+k.penta.r1 <- mean(c(k.penta.a1.r1,k.penta.a2.r1,k.penta.a3.r1))
+k.penta.r1
+
+
+
+
+##################
+# Task 3: CAMEO
+
+# CAMEO by actor
+k.cameo.a1.r1 <- as.numeric(kappam.fleiss(cameo.a1.r1, exact=TRUE)[5])
+k.cameo.a2.r1 <- as.numeric(kappam.fleiss(cameo.a2.r1, exact=TRUE)[5])
+k.cameo.a3.r1 <- as.numeric(kappam.fleiss(cameo.a3.r1, exact=TRUE)[5])
+
+# Average 
+k.cameo.r1 <- mean(c(k.cameo.a1.r1,k.cameo.a2.r1,k.cameo.a3.r1))
+k.cameo.r1
+
+
+
+
+##################
+# Entity similarity using the 'stringdist' package
+
+# Set combinations of entities e1:e5
+# e1e2,e1e3,e1e4,e1e5,
+# e2e3,e2e4,e2e5,
+# e3e4,e3e5
+# e4e5
+
+# Begin calculating similarity
+  {
+  ############
+  # sim.e1e2
+  sim.e1e2 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e1)){
+    for(j in 1:length(e2)){
+    
+      # Calculate similarity
+      sim.score <- stringsim(e1[,i], e2[,j])
+    
+      # Add new column
+      new <- rep(i, nrow(sim.e1e2))                               # Create new column
+      sim.e1e2[ , ncol(sim.e1e2) + 1] <- sim.score                # Append new column
+      colnames(sim.e1e2)[ncol(sim.e1e2)] <- paste0("e1.", i,"e2.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e1e3
+  sim.e1e3 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e1)){
+    for(j in 1:length(e3)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e1[,i], e3[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e1e3))                               # Create new column
+      sim.e1e3[ , ncol(sim.e1e3) + 1] <- sim.score                # Append new column
+      colnames(sim.e1e3)[ncol(sim.e1e3)] <- paste0("e1.", i,"e3.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e1e4
+  sim.e1e4 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e1)){
+    for(j in 1:length(e4)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e1[,i], e4[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e1e4))                               # Create new column
+      sim.e1e4[ , ncol(sim.e1e4) + 1] <- sim.score                # Append new column
+      colnames(sim.e1e4)[ncol(sim.e1e4)] <- paste0("e1.", i,"e4.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e1e5
+  sim.e1e5 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e1)){
+    for(j in 1:length(e5)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e1[,i], e5[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e1e5))                               # Create new column
+      sim.e1e5[ , ncol(sim.e1e5) + 1] <- sim.score                # Append new column
+      colnames(sim.e1e5)[ncol(sim.e1e5)] <- paste0("e1.", i,"e5.",j)  # Rename column name
+    }
+  }
+  
+  
+  ############
+  # sim.e2e3
+  sim.e2e3 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e2)){
+    for(j in 1:length(e3)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e2[,i], e3[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e2e3))                               # Create new column
+      sim.e2e3[ , ncol(sim.e2e3) + 1] <- sim.score                # Append new column
+      colnames(sim.e2e3)[ncol(sim.e2e3)] <- paste0("e2.", i,"e3.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e2e4
+  sim.e2e4 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e2)){
+    for(j in 1:length(e4)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e2[,i], e4[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e2e4))                               # Create new column
+      sim.e2e4[ , ncol(sim.e2e4) + 1] <- sim.score                # Append new column
+      colnames(sim.e2e4)[ncol(sim.e2e4)] <- paste0("e2.", i,"e4.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e2e5
+  sim.e2e5 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e2)){
+    for(j in 1:length(e5)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e2[,i], e5[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e2e5))                               # Create new column
+      sim.e2e5[ , ncol(sim.e2e5) + 1] <- sim.score                # Append new column
+      colnames(sim.e2e5)[ncol(sim.e2e5)] <- paste0("e2.", i,"e5.",j)  # Rename column name
+    }
+  }
+  
+  
+  ############
+  # sim.e3e4
+  sim.e3e4 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e3)){
+    for(j in 1:length(e4)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e3[,i], e4[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e3e4))                               # Create new column
+      sim.e3e4[ , ncol(sim.e3e4) + 1] <- sim.score                # Append new column
+      colnames(sim.e3e4)[ncol(sim.e3e4)] <- paste0("e3.", i,"e4.",j)  # Rename column name
+    }
+  }
+  
+  ############
+  # sim.e3e5
+  sim.e3e5 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e3)){
+    for(j in 1:length(e5)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e3[,i], e5[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e3e5))                               # Create new column
+      sim.e3e5[ , ncol(sim.e3e5) + 1] <- sim.score                # Append new column
+      colnames(sim.e3e5)[ncol(sim.e3e5)] <- paste0("e3.", i,"e5.",j)  # Rename column name
+    }
+  }
+  
+  
+  ############
+  # sim.e4e5
+  sim.e4e5 <- data.frame(matrix("", ncol = 0, nrow = 100))  
+  
+  for(i in 1:length(e4)){
+    for(j in 1:length(e5)){
+      
+      # Calculate similarity
+      sim.score <- stringsim(e4[,i], e5[,j])
+      
+      # Add new column
+      new <- rep(i, nrow(sim.e4e5))                               # Create new column
+      sim.e4e5[ , ncol(sim.e4e5) + 1] <- sim.score                # Append new column
+      colnames(sim.e4e5)[ncol(sim.e4e5)] <- paste0("e4.", i,"e5.",j)  # Rename column name
+    }
+  }
+  
+  }
+  # End calculating similarity
+
+
+
+##################
+# Round up similarity by 75%
+
+# Begin rounding up
+  {
+  sim.e1e2 <-  sim.e1e2 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e1e3 <-  sim.e1e3 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e1e4 <-  sim.e1e4 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e1e5 <-  sim.e1e5 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e2e3 <-  sim.e2e3 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e2e4 <-  sim.e2e4 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e2e5 <-  sim.e2e5 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e3e4 <-  sim.e3e4 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e3e5 <-  sim.e3e5 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  sim.e4e5 <-  sim.e4e5 %>% 
+    mutate_all(funs(case_when( . >=0.75 ~ 1, . < 0.75 ~ NA_real_, TRUE ~ .))) %>% 
+    rowSums(., na.rm = TRUE) %>% 
+    as.data.frame()
+  
+  }
+  # End rounding up
+  
+
+
+##################
+# Database indicating number of matches
+
+# Merge all similar entity databases
+sim.full <- cbind(sim.e1e2, sim.e1e3)
+sim.full <- cbind(sim.full, sim.e1e4)
+sim.full <- cbind(sim.full, sim.e1e5)
+sim.full <- cbind(sim.full, sim.e2e3)
+sim.full <- cbind(sim.full, sim.e2e4)
+sim.full <- cbind(sim.full, sim.e2e5)
+sim.full <- cbind(sim.full, sim.e3e4)
+sim.full <- cbind(sim.full, sim.e3e5)
+sim.full <- cbind(sim.full, sim.e4e5)
+
+# Assign column names
+colnames(sim.full) <- c('sim.e1e2', 'sim.e1e3', 'sim.e1e4', 'sim.e1e5', 'sim.e2e3', 'sim.e2e4' ,'sim.e2e5' ,'sim.e3e4' ,'sim.e3e5' ,'sim.e4e5' )
+
+
+##################
+# how to compare them???
+
+
+
+
+
+
+
+
+
+################################################################
+################################################################
+# PLOT AGGREGATE FLEISS KAPPA
+
+# Generate data frame of aggregate results
+df.r1 <- as.data.frame(c(k.cameo.r1,k.penta.r1,k.rel.r1))
+tasks <- c("CAMEO","PentaClass","Relevant")
+df.r1 <- cbind(df.r1, tasks)
+colnames(df.r1) <- c("value","task")
+
+
+# Plot
+plot.r1 <- ggplot(df.r1, aes(task,value, fill=task)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values=c("firebrick1", "firebrick3","forestgreen")) +
+  scale_x_discrete(limits = rev(df.r1$task)) + 
+  ggtitle("Intercoder reliability - Round 1 (aggregated)") + ylab("Fleiss Kappa") +
+  theme(legend.position = "none")
+
+plot.r1
+
+ggsave(here("graphs","fkappa_round1.pdf"))
+
+
+
+
+
+
+
+
+
+################################################################
+################################################################
+# PLOT DISAGGREGATED FLEISS KAPPA
+
+# Generate data frame of aggregate results
+df.dis.r1 <- as.data.frame(c(k.cameo.a3.r1,k.penta.a3.r1,
+                             k.cameo.a2.r1,k.penta.a2.r1,
+                             k.cameo.a1.r1,k.penta.a1.r1,
+                             k.rel.r1))
+tasks <- c("CAMEO\n Action 3","PentaClass\n Action 3",
+           "CAMEO\n Action 2","PentaClass\n Action 2",
+           "CAMEO\n Action 1","PentaClass\n Action 1",
+           "Relevant")
+df.dis.r1 <- cbind(df.dis.r1, tasks)
+colnames(df.dis.r1) <- c("value","task")
+
+# Plot
+plot.dis.r1 <- ggplot(df.dis.r1, aes(task,value, fill=task)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values=c("firebrick1", "dodgerblue", "darkorange",
+                             "firebrick3", "dodgerblue3", "darkorange3",
+                             "forestgreen")) + 
+  scale_x_discrete(limits = rev(df.dis.r1$task)) + 
+  ggtitle("Intercoder reliability - Round 1 (disaggregated)") + ylab("Fleiss Kappa") +
+  theme(legend.position = "none")  
+
+plot.dis.r1
+
+ggsave(here("graphs","fkappa__dis_round1.pdf"))
+
+
+
+
+
+
+
+
+
+# End of script
